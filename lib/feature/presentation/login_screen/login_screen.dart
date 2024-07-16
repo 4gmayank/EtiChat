@@ -4,6 +4,7 @@ import 'package:eti_chat/core/common_widget/validator_text_field.dart';
 import 'package:eti_chat/core/conifg/localization.dart';
 import 'package:eti_chat/core/conifg/navigation.dart';
 import 'package:eti_chat/core/utils/constants.dart';
+import 'package:eti_chat/feature/presentation/app_language/app_language_bloc.dart';
 import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -195,6 +196,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigation.intent(context, AppRoutes.registrationScreen);
                 },
                 child: Text(MyLocalizations.of(context).translate('sign_up')),
+              ),
+              const CustomSpacerWidget(height: 38.0),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<AppLanguageBloc>().emitAppLanguage();
+                },
+                child: Text(MyLocalizations.of(context).translate('change_language')),
               ),
             ],
           ),

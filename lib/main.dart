@@ -1,5 +1,7 @@
 import 'package:eti_chat/app_routes.dart';
 import 'package:eti_chat/core/conifg/localization.dart';
+import 'package:eti_chat/feature/presentation/app_language/app_language_bloc.dart';
+import 'package:eti_chat/feature/presentation/app_language/app_language_bloc.dart';
 import 'package:eti_chat/feature/presentation/home_screen/home_bloc.dart';
 import 'package:eti_chat/feature/presentation/home_screen/home_screen.dart';
 import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
@@ -18,7 +20,11 @@ Future<void> main() async {
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
+  WidgetsFlutterBinding.ensureInitialized();
+  // TestWidgetsFlutterBinding.ensureInitialized();
+  // MIXIN
   await di.init();
+
   runApp(const MyApp());
 }
 
@@ -27,21 +33,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chat Buddy',
-      debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.splash,
-      localizationsDelegates: const [
-        MyLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppLanguageBloc>(
+          create: (context) => sl.get<AppLanguageBloc>(),
+        ),
       ],
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('ar', ''),
-      ],
-      routes: _registerRoutes(),
+      child: BlocBuilder<AppLanguageBloc, Locale>(
+        builder: (context, state) {
+          debugPrint("state  $state");
+
+          return MaterialApp(
+            title: 'Chat Buddy',
+            locale: state,
+            debugShowCheckedModeBanner: false,
+            initialRoute: AppRoutes.splash,
+            localizationsDelegates: const [
+              MyLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+              Locale('ar', ''),
+            ],
+            routes: _registerRoutes(),
+          );
+        },
+      ),
     );
   }
 }

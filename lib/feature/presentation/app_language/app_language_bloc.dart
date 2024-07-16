@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
+import 'package:eti_chat/feature/data/data_sources/local_datasource.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'app_language_event.dart';
@@ -19,14 +20,9 @@ class AppLanguageBloc extends Cubit<Locale> {
 
   void emitAppLanguage() {
     final defaultLocale = _localDataSource.getLocaleLanguage();
-    var locale = Locale(defaultLocale);
+    _localDataSource.setLocaleLanguage(defaultLocale == "en" ? "ar" : "en");
+    var locale = Locale(_localDataSource.getLocaleLanguage());
     log("CuBt: PreferAppCacheLang ${locale.languageCode}");
     emit.call(locale);
   }
-}
-class LocalDataSource{
-  String getLocaleLanguage() {
-    return '';
-  }
-
 }
