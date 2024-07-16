@@ -33,8 +33,8 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.careator.chatbuddy.chat_buddy.eti_chat"
-    compileSdkVersion flutter.compileSdkVersion
+    namespace "com.careator.chatbuddy.chat_buddy"
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
