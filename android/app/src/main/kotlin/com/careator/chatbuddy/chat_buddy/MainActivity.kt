@@ -1,4 +1,4 @@
-package com.careator.chatbuddy.chat_buddy.eti_chat
+package com.careator.chatbuddy.chat_buddy
 
 import io.flutter.embedding.android.FlutterActivity
 
