@@ -1,4 +1,4 @@
-import 'package:chat_buddy/core/utils/constants.dart';
+import 'package:eti_chat/core/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

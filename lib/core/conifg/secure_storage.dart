@@ -1,5 +1,5 @@
-import 'package:chat_buddy/core/utils/constants.dart';
-import 'package:chat_buddy/domain/entity/user_entity.dart';
+import 'package:eti_chat/core/utils/constants.dart';
+import 'package:eti_chat/feature/domain/entities/user_entity.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 

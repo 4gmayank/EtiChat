@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:chat_buddy/app_routes.dart';
-import 'package:chat_buddy/core/conifg/navigation.dart';
-import 'package:chat_buddy/core/utils/constants.dart';
-import 'package:chat_buddy/feature/presentation/pages/splash_screen/splash_bloc.dart';
+import 'package:eti_chat/app_routes.dart';
+import 'package:eti_chat/core/conifg/navigation.dart';
+import 'package:eti_chat/core/utils/constants.dart';
+import 'package:eti_chat/feature/presentation/splash_screen/splash_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
