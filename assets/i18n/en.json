@@ -1,0 +1,9 @@
+{
+  "email": "Email",
+  "country": "Country",
+  "displayName": "User Display Name",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "mobile": "Mobile",
+  "register": "Register"
+}
