@@ -5,5 +5,6 @@
   "password": "Password",
   "confirmPassword": "Confirm Password",
   "mobile": "Mobile",
-  "register": "Register"
+  "register": "Register",
+  "scan_code": "Scan Chat Token"
 }

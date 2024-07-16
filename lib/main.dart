@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chat Buddy',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.homeScreen,
+      initialRoute: AppRoutes.registrationScreen,
       localizationsDelegates: const [
         MyLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

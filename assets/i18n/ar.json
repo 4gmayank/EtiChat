@@ -5,5 +5,6 @@
   "password": "كلمة المرور",
   "confirmPassword": "تأكيد كلمة المرور",
   "mobile": "رقم الهاتف",
-  "register": "تسجيل"
+  "register": "تسجيل",
+  "scan_code": "Scan Chat Token"
 }
