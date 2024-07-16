@@ -1,0 +1,21 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "chatbuddy-1",
+          "appId": "1:678332946966:android:1e65672f8038f04b423337",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "chatbuddy-1",
+          "configurations": {
+            "android": "1:678332946966:android:1e65672f8038f04b423337"
+          }
+        }
+      }
+    }
+  }
+}
