@@ -129,64 +129,69 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.qr_code),
-            onPressed: () {
-              showDia("data");
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.scanner),
-            onPressed: () {
-              showDia(null);
-            },
-          ),
-        ],
-      ),
-      body: BlocConsumer<HomeBloc, HomeState>(
-        listener: (context, state) {
-          // TODO: implement listener
-        },
-        builder: (context, state) {
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  reverse: true,
-                  itemCount: _messages.length,
-                  itemBuilder: (context, index) {
-                    final message = _messages[index];
-                    return ChatBubble(message: message);
-                  },
+    return SafeArea(
+      top: true,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.appColor,
+          elevation: 1,
+          title: Text('Chat'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.qr_code),
+              onPressed: () {
+                showDia("data");
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.scanner),
+              onPressed: () {
+                showDia(null);
+              },
+            ),
+          ],
+        ),
+        body: BlocConsumer<HomeBloc, HomeState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    reverse: true,
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      return ChatBubble(message: message);
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter your message...',
-                          border: OutlineInputBorder(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter your message...',
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      onPressed: _sendMessage,
-                    ),
-                  ],
+                      IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: _sendMessage,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

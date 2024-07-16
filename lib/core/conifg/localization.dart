@@ -14,7 +14,7 @@ class MyLocalizations {
   /// Getting string from en.json
   String getString(String key) => language == null || !(language!.containsKey(key))? "NA": language![key];
 
-  String translate(String key) => language==null? "NA": language![key];
+  String translate(String key) =>language == null || !(language!.containsKey(key))? "NA": language![key];
 
   String getStringWithStar(String key) => language![key] + " *";
 

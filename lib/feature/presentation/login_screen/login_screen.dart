@@ -8,7 +8,9 @@ import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pinput/pinput.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,7 +33,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     if (kDebugMode) {
-      _passwordInputController.text = "9000408310";
       _emailInputController.text = "mayank@careaotr.com";
     }
   }
@@ -44,8 +45,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return PopScope(
       canPop: false,
       child: SafeArea(
-        top: false,
+        top: true,
         child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.appColor,
+            elevation: 1,
+            title: Text("Login"),
+          ),
           body: BlocConsumer<LoginBloc, LoginState>(
             listener: (context, state) {
               // if (state is LoginErrorState) {
@@ -73,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _getBody() {
     return Container(
-      margin: EdgeInsets.only(top: 50.0),
+      margin: const EdgeInsets.only(top: 50.0),
       height: MediaQuery.of(context).size.height,
       decoration: AppDecoration.screenDecoration,
       child: _getInputFieldWithButton(),
@@ -82,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _getEnterTextHeading() {
     return Text(
-      MyLocalizations.of(context).getString('email_address_hint'),
+      MyLocalizations.of(context).getString('email_address'),
       style: AppFonts.normalStyle(
         fontWeight: FontWeight.w500,
         fontColor: AppColors.textBlack,
@@ -138,12 +144,34 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              // _getSignUpHeading(),
               _getEnterTextHeading(),
               const CustomSpacerWidget(height: 25.0),
               _getLoginTextField(),
               const CustomSpacerWidget(height: 32.0),
-              const CustomSpacerWidget(height: 24.0),
+              Pinput(
+                length: 4,
+                pinAnimationType: PinAnimationType.slide,
+                controller: _passwordInputController,
+                // focusNode: focusNode,
+                // defaultPinTheme: defaultPinTheme,
+                showCursor: true,
+                onCompleted: (String otp) {
+                  // if (onComplete != null) {
+                  //   onComplete!(otp);
+                  // }
+                },
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                // cursor: cursor,
+
+                // preFilledWidget: preFilledWidget,
+              ),
+              const CustomSpacerWidget(height: 38.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigation.intent(context, AppRoutes.homeScreen);
+                },
+                child: Text(MyLocalizations.of(context).translate('login')),
+              ),
               const Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -162,6 +190,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               const CustomSpacerWidget(height: 38.0),
+              ElevatedButton(
+                onPressed: () {
+                  Navigation.intent(context, AppRoutes.registrationScreen);
+                },
+                child: Text(MyLocalizations.of(context).translate('sign_up')),
+              ),
             ],
           ),
         ),
