@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const CustomSpacerWidget(height: 38.0),
               ElevatedButton(
                 onPressed: () {
-                  Navigation.intent(context, AppRoutes.homeScreen);
+                  Navigation.intentWithClearAllRoutes(context, AppRoutes.homeScreen);
                 },
                 child: Text(MyLocalizations.of(context).translate('login')),
               ),

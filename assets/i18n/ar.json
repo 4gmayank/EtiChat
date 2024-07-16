@@ -6,5 +6,9 @@
   "confirmPassword": "تأكيد كلمة المرور",
   "mobile": "رقم الهاتف",
   "register": "تسجيل",
-  "scan_code": "Scan Chat Token"
+  "scan_code": "مسح رمز الدردشة",
+  "email_address": "عنوان البريد الإلكتروني: ",
+  "sign_up": "التسجيل",
+  "login": "دخول",
+  "change_language": "اللغة :"
 }

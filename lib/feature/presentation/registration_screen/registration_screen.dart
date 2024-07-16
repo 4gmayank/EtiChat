@@ -63,7 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigation.intent(context, AppRoutes.homeScreen);
+                  Navigation.intentWithClearAllRoutes(context, AppRoutes.homeScreen);
                 },
                 child: Text(locale.translate('register')),
               ),

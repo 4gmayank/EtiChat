@@ -84,4 +84,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+//    implementation("org.videolan.android:libvlc-all:3.3.5")
+}

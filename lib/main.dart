@@ -11,20 +11,55 @@ import 'package:eti_chat/feature/presentation/registration_screen/registration_s
 import 'package:eti_chat/feature/presentation/splash_screen/splash_bloc.dart';
 import 'package:eti_chat/feature/presentation/splash_screen/splash_screen.dart';
 import 'package:eti_chat/injection_container.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'injection_container.dart' as di;
 
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'Chat Notification', // title
+    description: 'This channel is used for important Chat notifications.', // description
+    importance: Importance.high,
+    playSound: true);
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  RemoteNotification? notification = message.notification;
+  debugPrint("receive");
+  // Routes are redirected on HomeScreen...
+  // String route = message.data["redirect_to"];
+  // String routeDetailId = message.data["id"];
+}
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
-  WidgetsFlutterBinding.ensureInitialized();
+
   // TestWidgetsFlutterBinding.ensureInitialized();
   // MIXIN
-  await di.init();
 
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, badge: true, sound: true);
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.init();
   runApp(const MyApp());
 }
 
