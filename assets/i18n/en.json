@@ -1,14 +1,18 @@
 {
   "email": "Email",
   "country": "Country",
-  "displayName": "User Display Name",
-  "password": "Password",
+  "name": "Name",
+  "password": "Password :",
   "confirmPassword": "Confirm Password",
   "mobile": "Mobile",
   "register": "Register",
+  "registration": "Registration",
   "scan_code": "Scan Chat Token",
   "email_address": "Email Address: ",
   "sign_up": "Sign Up",
   "login": "Login",
-  "change_language": "Language :"
+  "change_language": "Language :",
+  "sign_in": "Sign In",
+  "enter_email_address": "Enter Email Address",
+  "home": "Home"
 }

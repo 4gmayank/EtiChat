@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:eti_chat/app_routes.dart';
 import 'package:eti_chat/core/common_widget/text_widget.dart';
+import 'package:eti_chat/core/conifg/localization.dart';
 import 'package:eti_chat/core/conifg/navigation.dart';
 import 'package:eti_chat/core/utils/constants.dart';
 import 'package:eti_chat/feature/presentation/home_screen/home_bloc.dart';
@@ -23,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  String? _companionToken;
   String _fcmToken = "";
   bool isFcmSent = false;
 
@@ -42,18 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    debugPrint("FCM token = $_fcmToken");
     _fcm.getToken().then((fcmToken) {
       _fcmToken = fcmToken!;
       debugPrint("FCM token = $_fcmToken");
       // BlocProvider.of<HomeBloc>(context).add(ShouldPassFCMTokenToServerEvent());
     });
     flutterLocalNotificationsPlugin.initialize(
-        InitializationSettings(
-            android: AndroidInitializationSettings('@mipmap/ic_launcher')),
+      InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher')),
       onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
       // onDidReceiveBackgroundNotificationResponse:
     );
-
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print("${message.toString()}");
@@ -85,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     FirebaseMessaging.onMessageOpenedApp.listen(
-          (RemoteMessage message) {
+      (RemoteMessage message) {
         RemoteNotification? notification = message.notification;
         if (message.data != null) {
           String route = message.data["redirect_to"];
@@ -109,8 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       try {
         final data = json.decode(payload);
         String? screenIdData = data["msg"];
-        if (screenIdData != null &&
-            screenIdData.isNotEmpty) {
+        if (screenIdData != null && screenIdData.isNotEmpty) {
           final String msg = screenIdData;
         }
       } on Exception catch (e) {
@@ -136,15 +137,13 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
               content: (token != null && token.isNotEmpty)
-                  ? getCodeDesign(token)
+                  ? showQR(token)
                   : getScannerDesign());
         });
   }
 
-  String? result;
-
   getScannerDesign() {
-    result = null;
+    _companionToken = null;
     return SizedBox(
       height: 330,
       width: 280.0,
@@ -155,9 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: QrCamera(
               key: qrKey,
               qrCodeCallback: (String? value) {
-                if (result == null && value != null) {
+                if (_companionToken == null && value != null) {
                   debugPrint("\n\n QR data $value");
-                  result = value as String;
+                  _companionToken = value as String;
                   AnimatedSnackBar.material(
                     value,
                     type: AnimatedSnackBarType.info,
@@ -181,43 +180,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  getCodeDesign(String qrCode) {
-    result = null;
+  showQR(String qrCode) {
     return SizedBox(
       height: 330,
       width: 280.0,
       child: Column(
         children: <Widget>[
-          if (qrCode != null && qrCode.isNotEmpty)
-            QrImageView(
-              data: '1234567890',
-              version: QrVersions.auto,
-              size: 200.0,
-            )
-          else
-            Expanded(
-              flex: 5,
-              child: QrCamera(
-                key: qrKey,
-                qrCodeCallback: (String? value) {
-                  if (result == null && value != null) {
-                    debugPrint("\n\n QR data $value");
-                    result = value as String;
-                    AnimatedSnackBar.material(
-                      value,
-                      type: AnimatedSnackBarType.info,
-                    ).show(context);
-                    Navigator.pop(context);
-                  }
-                },
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                ),
-                // overlay: ,
-              ),
-            ),
+          QrImageView(
+            data: qrCode,
+            version: QrVersions.auto,
+            size: 200.0,
+          ),
           TextWidget(
             constText: "scan_code",
             appFonts: AppFonts.normalStyle(),
@@ -237,9 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: AppBar(
             backgroundColor: AppColors.appColor,
             elevation: 1,
-            leading: null,
             centerTitle: true,
-            title: Text('Home'),
+            title: Text(
+              MyLocalizations.of(context).getString("home"),
+              style: AppFonts.appBarBoldStyle(fontColor: AppColors.white),
+            ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.logout),
@@ -251,59 +226,64 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: BlocConsumer<HomeBloc, HomeState>(
-            listener: (context, state) {
-              // TODO: implement listener
-            },
+            listener: (context, state) {},
             builder: (context, state) {
               return Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      // if (_fcmToken.isNotEmpty)
+                        IconButton(
+                          icon: const Icon(Icons.qr_code),
+                          iconSize:
+                              ((_companionToken ?? "").isNotEmpty) ? 24 : 80,
+                          onPressed: () {
+                            showDia(_fcmToken);
+                          },
+                        ),
                       IconButton(
-                        icon: Icon(Icons.qr_code),
-                        onPressed: () {
-                          showDia("data");
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.document_scanner_outlined),
+                        icon: const Icon(Icons.document_scanner_outlined),
+                        iconSize:
+                            ((_companionToken ?? "").isNotEmpty) ? 24 : 80,
                         onPressed: () {
                           showDia(null);
                         },
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        final message = _messages[index];
-                        return ChatBubble(message: message);
-                      },
+                  if ((_companionToken ?? "").isNotEmpty)
+                    Expanded(
+                      child: ListView.builder(
+                        reverse: true,
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          final message = _messages[index];
+                          return ChatBubble(message: message);
+                        },
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _messageController,
-                            decoration: const InputDecoration(
-                              hintText: 'Enter your message...',
-                              border: OutlineInputBorder(),
+                  if ((_companionToken ?? "").isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _messageController,
+                              decoration: const InputDecoration(
+                                hintText: 'Enter your message...',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.send),
-                          onPressed: _sendMessage,
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: _sendMessage,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               );
             },
@@ -324,7 +304,7 @@ class Message {
 class ChatBubble extends StatelessWidget {
   final Message message;
 
-  const ChatBubble({Key? key, required this.message}) : super(key: key);
+  const ChatBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -332,8 +312,8 @@ class ChatBubble extends StatelessWidget {
       alignment:
           message.isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        padding: EdgeInsets.all(10.0),
-        margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
         decoration: BoxDecoration(
           color: message.isSentByMe ? Colors.blue : Colors.grey[300],
           borderRadius: BorderRadius.circular(10.0),

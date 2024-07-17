@@ -17,6 +17,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Timer? _timer;
+  final int time = 3;
 
   @override
   void initState() {
@@ -28,17 +29,29 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: AppColors.appColor,
       body: BlocConsumer<SplashBloc, SplashState>(
         listener: (context, state) {},
         builder: (context, state) {
           return Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.symmetric(horizontal: 26),
-            color: AppColors.white,
-            child: const Center(
-              child: Text("Careator"),
-            ),
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              padding: const EdgeInsets.symmetric(horizontal: 26),
+              color: AppColors.appColor,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 30.0, end: 40.0),
+                  duration: Duration(seconds: time),
+                  builder: (context, size, child) {
+                    return Text(
+                      'Careator',
+                      style: TextStyle(fontSize: size, color: AppColors.whiteText),
+                    );
+                  },
+                ),
+              ),
           );
         },
       ),
@@ -46,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _handleNavigation(final String route) {
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: time), () {
       Navigation.intentWithClearAllRoutes(context, route);
     });
   }

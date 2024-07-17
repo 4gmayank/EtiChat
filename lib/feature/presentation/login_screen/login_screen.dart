@@ -7,7 +7,6 @@ import 'package:eti_chat/core/utils/constants.dart';
 import 'package:eti_chat/feature/presentation/app_language/app_language_bloc.dart';
 import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,15 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordInputController =
       TextEditingController();
   final TextEditingController _emailInputController = TextEditingController();
-  final TextEditingController _countryCodeInputController =
-      TextEditingController();
   String? data;
 
   @override
   void initState() {
     super.initState();
     if (kDebugMode) {
-      _emailInputController.text = "mayank@careaotr.com";
+      _emailInputController.text = "";
     }
   }
 
@@ -51,7 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
           appBar: AppBar(
             backgroundColor: AppColors.appColor,
             elevation: 1,
-            title: Text("Login"),
+            centerTitle: true,
+            title: Text(
+              MyLocalizations.of(context).getString("login"),
+              style: AppFonts.appBarBoldStyle(fontColor: AppColors.white),
+            ),
           ),
           body: BlocConsumer<LoginBloc, LoginState>(
             listener: (context, state) {
@@ -87,9 +88,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  _getEnterTextHeading() {
+  _getEnterTextHeading(String str) {
     return Text(
-      MyLocalizations.of(context).getString('email_address'),
+      MyLocalizations.of(context).getString(str),
+      textAlign: TextAlign.left,
       style: AppFonts.normalStyle(
         fontWeight: FontWeight.w500,
         fontColor: AppColors.textBlack,
@@ -110,20 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _getLoginTextField() {
-    return Container(
-        margin: EdgeInsets.only(left: 25.0, right: 25.0),
-        child: ValidateTextField(
-          hintText:
-              MyLocalizations.of(context).getString('enter_email_address'),
-          controller: _emailInputController,
-          keyboardType: TextInputType.emailAddress,
-          textCapitalization: TextCapitalization.none,
-          validate: (value) => value.isEmpty
-              ? MyLocalizations.of(context).getString('enter_your_email')
-              : (Constants.emailRegExp.hasMatch(value)
-                  ? null
-                  : MyLocalizations.of(context).getString('enter_valid_email')),
-        ));
+    return ValidateTextField(
+      hintText: MyLocalizations.of(context).getString('enter_email_address'),
+      controller: _emailInputController,
+      keyboardType: TextInputType.emailAddress,
+      textCapitalization: TextCapitalization.none,
+      validate: (value) => value.isEmpty
+          ? MyLocalizations.of(context).getString('enter_your_email')
+          : (Constants.emailRegExp.hasMatch(value)
+              ? null
+              : MyLocalizations.of(context).getString('enter_valid_email')),
+    );
   }
 
   String _validateLogin() {
@@ -141,70 +140,57 @@ class _LoginScreenState extends State<LoginScreen> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              _getEnterTextHeading(),
-              const CustomSpacerWidget(height: 25.0),
-              _getLoginTextField(),
-              const CustomSpacerWidget(height: 32.0),
-              Pinput(
-                length: 4,
-                pinAnimationType: PinAnimationType.slide,
-                controller: _passwordInputController,
-                // focusNode: focusNode,
-                // defaultPinTheme: defaultPinTheme,
-                showCursor: true,
-                onCompleted: (String otp) {
-                  // if (onComplete != null) {
-                  //   onComplete!(otp);
-                  // }
-                },
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                // cursor: cursor,
-
-                // preFilledWidget: preFilledWidget,
-              ),
-              const CustomSpacerWidget(height: 38.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigation.intentWithClearAllRoutes(context, AppRoutes.homeScreen);
-                },
-                child: Text(MyLocalizations.of(context).translate('login')),
-              ),
-              const Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Flexible(
-                    child: Divider(
-                      color: AppColors.appColor,
-                      thickness: 1,
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<AppLanguageBloc>().emitAppLanguage();
+                    },
+                    child: Text(MyLocalizations.of(context)
+                        .translate('change_language')),
                   ),
-                  Flexible(
-                    child: Divider(
-                      color: AppColors.appColor,
-                      thickness: 1,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _getEnterTextHeading('email_address'),
+                    const CustomSpacerWidget(height: 15.0),
+                    _getLoginTextField(),
+                    const CustomSpacerWidget(height: 32.0),
+                    _getEnterTextHeading("password"),
+                    const CustomSpacerWidget(height: 15.0),
+                    Center(
+                      child: Pinput(
+                        length: 4,
+                        pinAnimationType: PinAnimationType.slide,
+                        controller: _passwordInputController,
+                        showCursor: true,
+                        onCompleted: (String password) {},
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const CustomSpacerWidget(height: 38.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigation.intent(context, AppRoutes.registrationScreen);
-                },
-                child: Text(MyLocalizations.of(context).translate('sign_up')),
-              ),
-              const CustomSpacerWidget(height: 38.0),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<AppLanguageBloc>().emitAppLanguage();
-                },
-                child: Text(MyLocalizations.of(context).translate('change_language')),
-              ),
-            ],
+                    const CustomSpacerWidget(height: 38.0),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigation.intentWithClearAllRoutes(
+                              context, AppRoutes.registrationScreen);
+                        },
+                        child: Text(
+                            MyLocalizations.of(context).translate('sign_in')),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

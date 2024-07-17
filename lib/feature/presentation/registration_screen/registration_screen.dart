@@ -1,8 +1,10 @@
 import 'package:eti_chat/app_routes.dart';
+import 'package:eti_chat/core/common_widget/custom_spacer_widget.dart';
 import 'package:eti_chat/core/conifg/localization.dart';
 import 'package:eti_chat/core/conifg/navigation.dart';
 import 'package:eti_chat/core/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -22,52 +24,71 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         appBar: AppBar(
           backgroundColor: AppColors.appColor,
           elevation: 1,
-          title: Text(locale.getString('register')),
+          centerTitle: true,
+          title: Text(
+            MyLocalizations.of(context).getString("registration"),
+            style: AppFonts.appBarBoldStyle(fontColor: AppColors.white),
+          ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  labelText: locale.translate('email'),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                TextField(
+                  keyboardType: TextInputType.name,
+                  decoration: InputDecoration(
+                    labelText: locale.translate('name'),
+                  ),
                 ),
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: locale.translate('country'),
+                TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: locale.translate('mobile'),
+                  ),
                 ),
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: locale.translate('displayName'),
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: locale.translate('email'),
+                  ),
                 ),
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: locale.translate('password'),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: locale.translate('country'),
+                  ),
                 ),
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: locale.translate('confirmPassword'),
+                const CustomSpacerWidget(
+                  height: 20,
                 ),
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: locale.translate('mobile'),
+                TextField(
+                  obscureText: true,
+                  maxLength: 4,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: locale.translate('password'),
+                  ),
                 ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigation.intentWithClearAllRoutes(context, AppRoutes.homeScreen);
-                },
-                child: Text(locale.translate('register')),
-              ),
-            ],
+                TextField(
+                  obscureText: true,
+                  maxLength: 4,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: locale.translate('confirmPassword'),
+                  ),
+                ),
+                CustomSpacerWidget(
+                  height: 40,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigation.intentWithClearAllRoutes(
+                        context, AppRoutes.homeScreen);
+                  },
+                  child: Text(locale.translate('sign_up')),
+                ),
+              ],
+            ),
           ),
         ),
       ),
