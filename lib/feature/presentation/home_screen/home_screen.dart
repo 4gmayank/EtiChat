@@ -2,11 +2,15 @@ import 'dart:convert';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:eti_chat/app_routes.dart';
+import 'package:eti_chat/core/common_widget/chat_bubble.dart';
 import 'package:eti_chat/core/common_widget/text_widget.dart';
 import 'package:eti_chat/core/conifg/localization.dart';
 import 'package:eti_chat/core/conifg/navigation.dart';
 import 'package:eti_chat/core/utils/constants.dart';
+import 'package:eti_chat/core/utils/custom_extension.dart';
+import 'package:eti_chat/feature/domain/entities/message_entity.dart';
 import 'package:eti_chat/feature/presentation/home_screen/home_bloc.dart';
+import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
 import 'package:eti_chat/main.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   String? _companionToken;
   String _fcmToken = "";
-  bool isFcmSent = false;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
   final TextEditingController _messageController = TextEditingController();
-  final List<Message> _messages = [];
+  final List<ChatMessageEntity> _messages = [];
 
   @pragma('vm:entry-point')
   void notificationTapBackground(NotificationResponse notificationResponse) {}
@@ -46,12 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     debugPrint("FCM token = $_fcmToken");
     _fcm.getToken().then((fcmToken) {
-      _fcmToken = fcmToken!;
-      debugPrint("FCM token = $_fcmToken");
-      // BlocProvider.of<HomeBloc>(context).add(ShouldPassFCMTokenToServerEvent());
+      setState(() {
+        _fcmToken = fcmToken ?? "";
+        debugPrint("FCM token = $_fcmToken");
+      });
     });
     flutterLocalNotificationsPlugin.initialize(
-      InitializationSettings(
+      const InitializationSettings(
           android: AndroidInitializationSettings('@mipmap/ic_launcher')),
       onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
       // onDidReceiveBackgroundNotificationResponse:
@@ -121,17 +125,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _sendMessage() {
-    if (_messageController.text.isEmpty) return;
+  void _sendMessage(String message) {
+    if (message.isEmpty) return;
+
+    context.read<HomeBloc>().add(
+          SendChatMessagesEvent(ChatMessageEntity(text: message)),
+        );
 
     setState(() {
-      _messages.add(Message(text: _messageController.text, isSentByMe: true));
+      _messages.add(
+          ChatMessageEntity(text: _messageController.text, isSentByMe: true));
     });
 
     _messageController.clear();
   }
 
-  showDia(String? token) {
+  showUIDialog(String? token) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -156,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
               qrCodeCallback: (String? value) {
                 if (_companionToken == null && value != null) {
                   debugPrint("\n\n QR data $value");
-                  _companionToken = value as String;
+                  setState(() {
+                    _companionToken = value;
+                  });
                   AnimatedSnackBar.material(
                     value,
                     type: AnimatedSnackBarType.info,
@@ -218,6 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.logout),
+                color: AppColors.white,
                 onPressed: () {
                   Navigation.intentWithClearAllRoutes(
                       context, AppRoutes.loginScreen);
@@ -226,20 +238,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           body: BlocConsumer<HomeBloc, HomeState>(
-            listener: (context, state) {},
+            listener: (context, state) {
+              if (state is HomeErrorState) {
+                Navigation.back(context);
+                widget.showErrorToast(context: context, message: state.message);
+              } else if (state is HomeLoadingState) {
+                widget.showProgressDialog(context);
+              } else if (state is HomeLoadedState) {
+                Navigation.back(context);
+              }
+            },
             builder: (context, state) {
+              if (state is HomeInitial) {
+                context.read<HomeBloc>().add(
+                      FetchChatMessagesEvent(),
+                    );
+              }
               return Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // if (_fcmToken.isNotEmpty)
+                      if (_fcmToken.isNotEmpty)
                         IconButton(
                           icon: const Icon(Icons.qr_code),
                           iconSize:
                               ((_companionToken ?? "").isNotEmpty) ? 24 : 80,
                           onPressed: () {
-                            showDia(_fcmToken);
+                            showUIDialog(_fcmToken);
                           },
                         ),
                       IconButton(
@@ -247,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         iconSize:
                             ((_companionToken ?? "").isNotEmpty) ? 24 : 80,
                         onPressed: () {
-                          showDia(null);
+                          showUIDialog(null);
                         },
                       ),
                     ],
@@ -279,7 +305,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.send),
-                            onPressed: _sendMessage,
+                            onPressed: () {
+                              _sendMessage(_messageController.text);
+                            },
                           ),
                         ],
                       ),
@@ -287,41 +315,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               );
             },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class Message {
-  final String text;
-  final bool isSentByMe;
-
-  Message({required this.text, required this.isSentByMe});
-}
-
-class ChatBubble extends StatelessWidget {
-  final Message message;
-
-  const ChatBubble({super.key, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment:
-          message.isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-        decoration: BoxDecoration(
-          color: message.isSentByMe ? Colors.blue : Colors.grey[300],
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Text(
-          message.text,
-          style: TextStyle(
-            color: message.isSentByMe ? Colors.white : Colors.black,
           ),
         ),
       ),

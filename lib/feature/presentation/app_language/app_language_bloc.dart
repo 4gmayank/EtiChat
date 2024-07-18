@@ -25,4 +25,8 @@ class AppLanguageBloc extends Cubit<Locale> {
     log("CuBt: PreferAppCacheLang ${locale.languageCode}");
     emit.call(locale);
   }
+
+  String language(){
+    return _localDataSource.getLocaleLanguage();
+  }
 }

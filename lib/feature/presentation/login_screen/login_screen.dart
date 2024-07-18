@@ -4,6 +4,7 @@ import 'package:eti_chat/core/common_widget/validator_text_field.dart';
 import 'package:eti_chat/core/conifg/localization.dart';
 import 'package:eti_chat/core/conifg/navigation.dart';
 import 'package:eti_chat/core/utils/constants.dart';
+import 'package:eti_chat/core/utils/custom_extension.dart';
 import 'package:eti_chat/feature/presentation/app_language/app_language_bloc.dart';
 import 'package:eti_chat/feature/presentation/login_screen/login_bloc.dart';
 import 'package:flutter/material.dart';
@@ -56,21 +57,27 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           body: BlocConsumer<LoginBloc, LoginState>(
             listener: (context, state) {
-              // if (state is LoginErrorState) {
-              //   Navigation.back(context);
-              //   widget.showErrorToast(context: context, message: state.message);
-              // } else if (state is LoginLoadingState) {
-              //   widget.showProgressDialog(context);
-              // } else if (state is LoginLoadedState) {
-              //   Navigation.back(context);
-              //   if (state.otpSentSuccess != null) {
-              //     widget.showSuccessToast(
-              //         context: context, message: state.otpSentSuccess!);
-              //     Navigation.intentWithData(context, AppRoutes.homeScreen);
-              //   }
-              // }
+              if (state is LoginErrorState) {
+                Navigation.back(context);
+                if(state.message == "signup"){
+                  Navigation.intentWithData(context, AppRoutes.loginScreen, _emailInputController.text);
+                }else {
+                  widget.showErrorToast(
+                      context: context, message: state.message);
+                }
+
+
+              } else if (state is LoginLoadingState) {
+                widget.showProgressDialog(context);
+              } else if (state is LoginLoadedState) {
+                Navigation.back(context);
+                Navigation.intentWithClearAllRoutes(context, AppRoutes.homeScreen);
+              }
             },
             builder: (context, state) {
+              if (state is LoginInitial) {
+                context.read<LoginBloc>().add(FetchUserDetailEvent());
+              }
               return _getBody();
             },
           ),
@@ -151,7 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       context.read<AppLanguageBloc>().emitAppLanguage();
                     },
                     child: Text(MyLocalizations.of(context)
-                        .translate('change_language')),
+                            .translate('change_language') +
+                        context.read<AppLanguageBloc>().language()),
                   ),
                 ),
                 Column(
@@ -180,6 +188,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
+                          context.read<LoginBloc>().add(
+                              LoginUserEvent(_emailInputController.text, _passwordInputController.text)
+                          );
                           Navigation.intentWithClearAllRoutes(
                               context, AppRoutes.registrationScreen);
                         },
