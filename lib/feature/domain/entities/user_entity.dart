@@ -1,20 +1,20 @@
 class UserEntity {
   final String email;
   final String country;
-  final String displayName;
+  final String name;
   final String password;
-  final String confirmPassword;
   final String mobile;
   final String? token;
+  final bool session;
 
   UserEntity({
     required this.email,
     required this.country,
-    required this.displayName,
+    required this.name,
     required this.password,
-    required this.confirmPassword,
     required this.mobile,
     required this.token,
+    this.session = false,
   });
 
   // Factory method to create a UserRegistration object from a JSON map
@@ -22,9 +22,8 @@ class UserEntity {
     return UserEntity(
       email: json['email'],
       country: json['country'],
-      displayName: json['displayName'],
+      name: json['name'],
       password: json['password'],
-      confirmPassword: json['confirmPassword'],
       mobile: json['mobile'],
       token: json['token'],
     );
@@ -35,15 +34,9 @@ class UserEntity {
     return {
       'email': email,
       'country': country,
-      'displayName': displayName,
+      'displayName': name,
       'password': password,
-      'confirmPassword': confirmPassword,
       'mobile': mobile,
     };
-  }
-
-  @override
-  String toString() {
-    return 'UserRegistration{email: $email, country: $country, displayName: $displayName, password: $password, confirmPassword: $confirmPassword, mobile: $mobile}';
   }
 }

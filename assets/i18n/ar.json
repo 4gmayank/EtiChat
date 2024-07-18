@@ -10,5 +10,8 @@
   "email_address": "عنوان البريد الإلكتروني: ",
   "sign_up": "التسجيل",
   "login": "دخول",
-  "change_language": "اللغة :"
+  "change_language": "اللغة :",
+  "sign_in": "تسجيل الدخول",
+  "enter_email_address": "أدخل عنوان البريد",
+  "home": "الإلكتروني"
 }

@@ -1,5 +1,5 @@
-class CountryEntity {
-  CountryEntity({
+class CountryModel {
+  CountryModel({
       this.name, 
       this.cca2, 
       this.ccn3, 
@@ -14,7 +14,7 @@ class CountryEntity {
       this.coatOfArms, 
       this.postalCode,});
 
-  CountryEntity.fromJson(dynamic json) {
+  CountryModel.fromJson(dynamic json) {
     name = json['name'] != null ? Name.fromJson(json['name']) : null;
     cca2 = json['cca2'];
     ccn3 = json['ccn3'];
